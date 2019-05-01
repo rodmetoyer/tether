@@ -1,0 +1,6 @@
+*.asv
+*.ini
+html/
+figures/
+eval/
+*.avi
