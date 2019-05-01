@@ -23,5 +23,8 @@ classdef node < handle
         end
         
         % Other class methods
+        function setNodeMass(hobj,mass)
+            hobj.mass = mass;
+        end
     end
 end
