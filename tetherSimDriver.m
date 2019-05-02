@@ -6,12 +6,12 @@ clearvars; close all; clc;
 addpath('src');
 
 % Setup simulation
-sim.totaltime = 20;
+sim.totaltime = 5;
 sim.timestep = 0.001;
 simTimes = 0:sim.timestep:sim.totaltime;
 numSteps = numel(simTimes);
 makemovie = true;
-moviefile = 'fig8heavyDown.avi';
+moviefile = 'dragtest.avi';
 tiptrails = true;
 frmrt = 40;
 

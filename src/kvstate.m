@@ -7,9 +7,9 @@ function xdot = kvstate(t,x,thr,fterm)
 % info.
 
 if nargin < 4
-    %fterm = [0;0;0];
-    a = 0.1; b = 1;
-    fterm = [-a*sin(b*t);-2*a*sin(2*b*t);0.0];
+    fterm = [0;0;0];
+    %a = 0.1; b = 1;
+    %fterm = [-a*sin(b*t);-2*a*sin(2*b*t);0.0];
 end
 
 numnodes = numel(thr.nodes);
@@ -33,6 +33,11 @@ if stretch > 0
 end
 % Add buoyancy
 % ftot = flink + [0;0;thr.nodes(1).buoyancy];
+
+% Add drag - none needed for the current implementation, but in general the
+% first node may not be constrained. Need to fgure out if I am going to
+% make that a law or not once I get the implementation ironed out.
+
 % Update acceleration (remember gravity) - first node constrained
 xdot(3*numnodes+1) = 0; % ftot(1)/thr.nodes(1).mass;
 xdot(3*numnodes+2) = 0; % ftot(2)/thr.nodes(1).mass;
@@ -54,6 +59,10 @@ for i=2:1:numnodes-1
     
     % Add buoyancy and previous link
     ftot = flink + [0;0;thr.nodes(i).buoyancy] - fprevlink;
+    
+    % Add drag
+    
+    
     % Update acceleration (remember gravity) - first node constrained
     xdot(3*numnodes+3*i-2) = ftot(1)/thr.nodes(i).mass;
     xdot(3*numnodes+3*i-1) = ftot(2)/thr.nodes(i).mass;
@@ -63,6 +72,10 @@ end
 
 % Add buoyancy and previous link and fterm
 ftot = [0;0;thr.nodes(numnodes).buoyancy] - fprevlink + fterm;
+
+% Add drag
+
+
 % Update acceleration (remember gravity) - first node constrained
 xdot(3*numnodes+3*numnodes-2) = ftot(1)/thr.nodes(numnodes).mass;
 xdot(3*numnodes+3*numnodes-1) = ftot(2)/thr.nodes(numnodes).mass;
