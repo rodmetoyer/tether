@@ -13,7 +13,7 @@ numSteps = numel(simTimes);
 makemovie = true;
 moviefile = 'junk.avi';
 tiptrails = true;
-frmrt = 40;
+frmrt = 40; % Framerate right here
 
 % Instantiate a kvlink
 % lj = kvlink(1000,25,2,0.1,0.025);
