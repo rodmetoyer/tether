@@ -7,9 +7,9 @@ function xdot = kvstate(t,x,thr,fterm)
 % info.
 
 if nargin < 4
-    fterm = [0;0;0];
-    %a = 0.1; b = 1;
-    %fterm = [-a*sin(b*t);-2*a*sin(2*b*t);0.0];
+    %fterm = [0;0;0];
+    a = 0.1; b = 1;
+    fterm = [-a*sin(b*t);-2*a*sin(2*b*t);0.0];
 end
 
 numnodes = numel(thr.nodes);
