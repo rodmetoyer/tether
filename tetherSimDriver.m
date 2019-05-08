@@ -11,7 +11,7 @@ sim.timestep = 0.001;
 simTimes = 0:sim.timestep:sim.totaltime;
 numSteps = numel(simTimes);
 makemovie = true;
-moviefile = 'dragtest.avi';
+moviefile = 'junk.avi';
 tiptrails = true;
 frmrt = 40; % Framerate right here
 
@@ -55,6 +55,8 @@ disp('Starting simulation...');
 tic
 opts = odeset('RelTol',1e-5,'AbsTol',1e-7,'Stats','on');%,'OutputFcn',@odeplot);
 [time,svec] = ode45(@(t, x)kvstate(t, x, thr),simTimes,x0,opts);
+
+
 toc
 for i=1:1:numNodes
     x(:,i) = svec(:,3*i-2);
@@ -82,25 +84,12 @@ for i=1:1:frmrt*sim.totaltime+1
     plot3([x(n,j) x(n,j)-a*sin(b*time(n))],[y(n,j) y(n,j)-2*a*sin(2*b*time(n))],[z(n,j) z(n,j)+0.0],'b-');
     if tiptrails
     clear nprev
-    for j=1:1:min(i,numtrail)
-        nprev = (i-j)*(numSteps-1)/(frmrt*sim.totaltime)+1;
-        plot3(x(nprev,numNodes),y(nprev,numNodes),z(nprev,numNodes),'.','Color',trmap(j,:));
-    end
+        for j=1:1:min(i,numtrail)
+            nprev = (i-j)*(numSteps-1)/(frmrt*sim.totaltime)+1;
+            plot3(x(nprev,numNodes),y(nprev,numNodes),z(nprev,numNodes),'.','Color',trmap(j,:));
+        end
     end
     
-%         nprev1 = (i-2)*(numSteps-1)/(frmrt*sim.totaltime)+1;
-%         nprev2 = (i-3)*(numSteps-1)/(frmrt*sim.totaltime)+1;
-%         nprev3 = (i-4)*(numSteps-1)/(frmrt*sim.totaltime)+1;
-%         nprev4 = (i-5)*(numSteps-1)/(frmrt*sim.totaltime)+1;
-%         nprev5 = (i-6)*(numSteps-1)/(frmrt*sim.totaltime)+1;
-%         nprev6 = (i-7)*(numSteps-1)/(frmrt*sim.totaltime)+1;
-%         nprev7 = (i-8)*(numSteps-1)/(frmrt*sim.totaltime)+1;
-%         nprev8 = (i-9)*(numSteps-1)/(frmrt*sim.totaltime)+1;
-%         nprev9 = (i-10)*(numSteps-1)/(frmrt*sim.totaltime)+1;
-%         plot3(x(nprev1,numNodes),y(nprev1,numNodes),z(nprev1,numNodes),'.k');
-%         plot3(x(nprev2,numNodes),y(nprev2,numNodes),z(nprev2,numNodes),'.k');
-%         plot3(x(nprev3,numNodes),y(nprev3,numNodes),z(nprev3,numNodes),'.k');
-%         plot3(x(nprev4,numNodes),y(nprev4,numNodes),z(nprev4,numNodes),'.k');
     grid on
     axis equal; axis([-1.1*length,1.1*length,-1.1*length,1.1*length,-1.1*length,1.1*length]);
     xlabel('x(m)');ylabel('y(m)');zlabel('z(m)');

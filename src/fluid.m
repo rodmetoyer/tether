@@ -7,19 +7,17 @@ classdef fluid < handle
         kinVisc     % Kinematic viscocity (m^2/s)
         temp        % Temperature (degC)
         pressure    % Pressure (Pa)        
+        depth       % Depth of the fluid (m) % todo(rodney) we need another class | maybe ocean < fluid?
     end
     
     properties
-        meanvelocity % 3x1 The mean fluid velocity in the inertial frame
-        flowtype     % Type of flow (todo this needs to be a class)
-        qwrypnts     % 3xn Vector of fluid qwery points. 
-    end
-    properties (Dependent)
-        pointvelocity    % 3xn The fluid velocity at a point(s) in the inertial frame - depends on qwrypnts and calculated based on flowtype
+        meanvelocity  % 3x1 The mean fluid velocity in the inertial frame
+        pointvelocity % 3x1 The mean velocity at a point in the fluid
+        flowtype      % Type of flow (todo this needs to be a class. Maybe enums.) 
     end
     
     methods
-        function hobj = fluid(density,dynVisc,kinVisc,temp,pressure,meanvelocity)
+        function hobj = fluid(density,dynVisc,kinVisc,temp,pressure,meanvelocity,flowtype,depth)
             if nargin < 1 % Make a water object
                 hobj.density = 997;
                 hobj.dynVisc = 9.482*10^-4;
@@ -27,7 +25,8 @@ classdef fluid < handle
                 hobj.temp = 23;
                 hobj.pressure = 103421;
                 hobj.meanvelocity = [0;0;0];
-                hobj.flowtype = uniform;
+                hobj.flowtype = flow.still;
+                hobj.depth = 100; % 100 meters deep. Used for gradient flow
             else
                 hobj.density = density;
                 hobj.dynVisc = dynVisc;
@@ -35,12 +34,40 @@ classdef fluid < handle
                 hobj.temp = temp;
                 hobj.pressure = pressure;
                 hobj.meanvelocity = meanvelocity;
+                hobj.flowtype = flow(flowtype);
+                hobj.depth = depth;
             end
         end
         
         % Other class methods
         function rampvelocity(hobj,t)
+            % ramps mean velocity as a function of time
             hobj.meanvelocity = [0.6/(1+exp(-2.0*(t-4)));0;0]; %todo(rodney) parameterize this
+        end
+        
+        function computePointVelocity(hobj,loc)
+            % computes the velocity at a point given by x,y,z
+            switch hobj.flowtype
+                case flow.still
+                    v = [0;0;0];
+                case flow.uniform
+                    % math
+                    v = [NaN;NaN;NaN];
+                case flow.linearZ
+                    % for now assume floor is zero and ramp to some
+                    % fraction of depth
+                    fracdpth = 0.5;                    
+                    if loc(3) > fracdpth*hobj.depth
+                        v = hobj.meanvelocity;
+                    elseif loc(3) < 0
+                        v = [0;0;0];
+                    else
+                        v = hobj.meanvelocity*loc(3)/(fracdpth*hobj.depth);
+                    end
+                otherwise
+                    error('Unknown flowtype in computePointVelocity');
+            end
+            hobj.pointvelocity = v;
         end
         
         % setters
@@ -55,22 +82,14 @@ classdef fluid < handle
             hobj.meanvelocity = v;
         end
         
-        function set.flowtype(hobj,t)
-            if t < uniform || t > custom
-                error('Only 3 flowtypes currently supported. Check enumerations.');
-            else
-                hobj.flowtype = t;
-            end
+        function set.flowtype(hobj,flowobj)
+            assert(isa(flowobj,'flow'),'flowtype must be a type of flow. Help flow for available types.');
+            hobj.flowtype = flowobj;
         end
         
         % getters
-    end
-    enumeration
-        uniform (1) % Uniform is always 1
-        zgradient (2)
-        % Add additional enums here as development continues.
-        % Remember to change custom to one more than what you added.
-        custom (3)  % Custom is always the last one
-    end
-end
+        
+    end % methods
+
+end % fluid
 
