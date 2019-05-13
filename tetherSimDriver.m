@@ -5,12 +5,51 @@
 clearvars; close all; clc;
 addpath('src');
 
+% Choice of one or more input files or manual simulation set-up
+opts.Interpreter = 'tex'; opts.Default = 'Input File(s)';
+answer = questdlg('\fontsize{12}\color{black}Manual simulation setup or choose input file(s)?','Simulation Setup','Manual','Input File(s)',opts);
+if strcmp(answer,'Manual')
+    % Use inputdlg to get all the simulation inputs
+    
+elseif strcmp(answer,'Input File(s)')
+    % Get the simulation inputs directly from the files
+    % Putting this in because we need to support something other than .mat
+    % files if we want to write the code in another language. But for now
+    % it's just easiest to load the mat files directly.
+    opts.Default = '.mat';
+    answer = questdlg('\fontsize{12}\color{black}What tpye of input file do you want to use?','Input file type','.txt','.mat',opts);
+    extension = '.mat';
+    if strcmp(answer,'.txt')
+        uiwait(msgbox('Psych! Only .mat currently supported. That"s what you"re going to use.','Just kidding message.','modal'));
+    elseif strcmp(answer,'.mat')
+        extension = '.mat';
+    end
+    pth = [pwd '\input'];
+    inputfiles = getFilesList(pth,extension);
+    [indx,tf] = listdlg('ListString',inputfiles,'PromptString','Select data files to process');
+    % todo(rodney) if ~tf then (user clicked cancel) run the entire batch?
+    inputfiles = inputfiles(indx);
+    % Run the simulation for every input file chosen
+    for i=1:1:numel(inputfiles)
+        % Load the inputs
+        
+        % Compute initial values
+        
+        % Run the simulation
+        
+        % Process the results
+        % Let's dump the data to a data folder in a subfolder the same name
+        % as the input file.
+    end
+end
+
+
 % Setup simulation
 sim.totaltime = 5;
 sim.timestep = 0.001;
 simTimes = 0:sim.timestep:sim.totaltime;
 numSteps = numel(simTimes);
-makemovie = true;
+makemovie = false;
 moviefile = 'junk.avi';
 tiptrails = true;
 frmrt = 40; % Framerate right here
@@ -25,7 +64,7 @@ radius = 1;
 springk = 150;
 dampFac = 1.5;
 relativeDensity = 2.0;
-numNodes = 5;
+numNodes = 20;
 thr = tether(length,mass,radius,springk,dampFac,relativeDensity,numNodes);
 
 % Alter node position prior to state vector initialization
@@ -97,7 +136,7 @@ for i=1:1:frmrt*sim.totaltime+1
     hold off
     M(i) = getframe(hfig);
 end
-
+moviefile = ['images\' moviefile];
 writerObj = VideoWriter(moviefile);
 writerObj.FrameRate = frmrt; writerObj.Quality = 100; % optional
 open(writerObj); writeVideo(writerObj,M); close(writerObj);

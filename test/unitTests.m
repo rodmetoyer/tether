@@ -10,9 +10,27 @@ addpath('..\src');
 results.fluidtest = fluidtest;
 disp('Fluid test results:');
 disp(results.fluidtest.overall);
+
 % nodeUnitTests
+
 % linkUnitTests
+
 % tetherUnitTests
+thr = tethertest;
+
+function r = tethertest
+    % Make a tether with some kv links
+    length = 10.0;
+    mass = 0.1;
+    radius = 1;
+    springk = 150;
+    dampFac = 1.5;
+    relativeDensity = 2.0;
+    numNodes = 5;
+    thr = tether(length,mass,radius,springk,dampFac,relativeDensity,numNodes);
+    
+    r = thr;
+end
 
 function r = fluidtest
     % make a fluid object

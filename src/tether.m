@@ -31,14 +31,12 @@ classdef tether < handle
             if nargin > 2
                 hobj.nodes = node.empty(0,n);
                 hobj.links = kvlink.empty(0,n-1); % todo(rodney) need to add functionality for any link
-                for i=1:1:n
+                hobj.nodes(1) = node(mass/n,mass/n*9.81*(1/reldens),0,0,0); % First node at origin of inertial frame
+                for i=2:1:n
                     % Create nodes
                     hobj.nodes(i) = node(mass/n,mass/n*9.81*(1/reldens),length/(n-1)*(i-1),0,0); % Initialize pointing in the x direction so nodes are not stacked if user doesn't adjust.
-                    % Create links
-                    if i==n % A link is created forward of the node
-                        continue;
-                    end
-                    hobj.links(i) = kvlink(n*spring,2*damp*n*sqrt(mass*spring)/(n-1),length/(n-1),radius,0);
+                    % Create links. A link is created forward of the node until you reach the last node.
+                    hobj.links(i-1) = kvlink(n*spring,2*damp*n*sqrt(mass*spring)/(n-1),length/(n-1),radius,0,hobj.nodes(i-1),hobj.nodes(i)); 
                 end
                 hobj.length = length;
                 hobj.mass = mass;
@@ -76,6 +74,8 @@ classdef tether < handle
                 hobj.nodes(i).w=spd(3,i);
             end                
         end
+        
+        
         
         % Adds links and nodes
         function addLink(hobj,node1,node2)
