@@ -1,0 +1,18 @@
+% First simulation input file
+% todo we need to come up with a naming convention for these input files
+% Description of simulation:
+% This simulation... todo make a description
+
+% Simulation Variables
+sim.totaltime=5;
+sim.timestep=0.001;
+sim.steptype='variable';
+
+% Tether Variables
+tether.length=10.0;
+tether.mass=0.1;
+tether.radius=1;
+tether.springk=150;
+tether.dampFac=1.5;
+tether.relativeDensity=2.0;
+tether.numNodes=20;

@@ -1,28 +1,69 @@
-% test.m
-% test the tether code base as I develop
+% tetherSimDriver.m
+% This is the driver for the tether simulations.
+% You have the choice of running the simulations from this script by
+% setting 'runFromScript' to true and varying default parameter values
+% manually. You can also just run the script and use the popup windows to
+% run the simulation, or you can choose input files.
+
+% This code was written by Rodney Metoyer and Chris Yoder
 
 % Setup workspace
 clearvars; close all; clc;
 addpath('src');
 
+% Setup default simulation parameters.
+% We'll also use these for running directly from the script
+runFromScript = false; % Make true to skip GUI choices - todo make funcitonal
+sim.totaltime = 5;
+sim.timestep = 0.001;
+tether.length = 10.0;
+tether.mass = 0.1;
+tether.radius = 1;
+tether.springk = 150;
+tether.dampFac = 1.5;
+tether.relativeDensity = 2.0;
+tether.numNodes = 20;
+
 % Choice of one or more input files or manual simulation set-up
-opts.Interpreter = 'tex'; opts.Default = 'Input File(s)';
+opts.Interpreter = 'tex'; opts.Default = 'Input File(s)'; opts.Resize='on';
 answer = questdlg('\fontsize{12}\color{black}Manual simulation setup or choose input file(s)?','Simulation Setup','Manual','Input File(s)',opts);
 if strcmp(answer,'Manual')
     % Use inputdlg to get all the simulation inputs
+    answer = inputdlg({'\fontsize{10}Enter simulation duration', '\fontsize{10}Enter simulation time step'},...
+        'Simulation Parameters',[1 50;1 50],{num2str(sim.totaltime),num2str(sim.timestep)},opts);
+    sim.totaltime = str2double(answer(1));
+    sim.timestep = str2double(answer(2));
+    answer = inputdlg({'\fontsize{10}Enter tether length', '\fontsize{10}Enter tether mass',...
+        '\fontsize{10}Enter tether radius','\fontsize{10}Enter tether spring constant','\fontsize{10}Enter tether damping factor',...
+        '\fontsize{10}Enter tether relative density','\fontsize{10}Enter number of nodes'},'Tether Parameters',[1 50;1 50;1 50;1 50;1 50;1 50;1 50],...
+        {num2str(tether.length),num2str(tether.mass),num2str(tether.radius),...
+        num2str(tether.springk),num2str(tether.dampFac),num2str(tether.relativeDensity),num2str(tether.numNodes)},opts);
+    tether.length = str2double(answer(1));
+    tether.mass = str2double(answer(2));
+    tether.radius = str2double(answer(3));
+    tether.springk = str2double(answer(4));
+    tether.dampFac = str2double(answer(5));
+    tether.relativeDensity = str2double(answer(6));
+    tether.numNodes = str2double(answer(7));
+    % Setup simulation
+    
+    % Run simulation
+    
+    % Process Results (dump data to file)
     
 elseif strcmp(answer,'Input File(s)')
     % Get the simulation inputs directly from the files
     % Putting this in because we need to support something other than .mat
     % files if we want to write the code in another language. But for now
     % it's just easiest to load the mat files directly.
-    opts.Default = '.mat';
+    opts.Default = '.txt';
     answer = questdlg('\fontsize{12}\color{black}What tpye of input file do you want to use?','Input file type','.txt','.mat',opts);
-    extension = '.mat';
-    if strcmp(answer,'.txt')
-        uiwait(msgbox('Psych! Only .mat currently supported. That"s what you"re going to use.','Just kidding message.','modal'));
-    elseif strcmp(answer,'.mat')
-        extension = '.mat';
+    extension = '.txt';
+    if strcmp(answer,'.mat')
+        uiwait(msgbox('Psych! Only .txt currently supported. That"s what you"re going to use.','Just kidding message.','modal'));
+        % extension = '.mat';
+    elseif strcmp(answer,'.txt')
+        extension = '.txt';
     end
     pth = [pwd '\input'];
     inputfiles = getFilesList(pth,extension);
@@ -32,8 +73,15 @@ elseif strcmp(answer,'Input File(s)')
     % Run the simulation for every input file chosen
     for i=1:1:numel(inputfiles)
         % Load the inputs
-        
-        % Compute initial values
+        fid = fopen([pth '\' char(inputfiles(i))]);
+        while true
+            tline = fgetl(fid);            
+            if isnumeric(tline)
+                break;
+            end
+            eval(tline);
+        end
+        % Setup the simulation
         
         % Run the simulation
         
@@ -43,10 +91,12 @@ elseif strcmp(answer,'Input File(s)')
     end
 end
 
+% Postprocess (as many times as chosen by user - i.e. goto data folder adn
+% allow user to select which data to post)
+    % Load data from file 
+    % Make plots and movies
 
 % Setup simulation
-sim.totaltime = 5;
-sim.timestep = 0.001;
 simTimes = 0:sim.timestep:sim.totaltime;
 numSteps = numel(simTimes);
 makemovie = false;
@@ -54,18 +104,12 @@ moviefile = 'junk.avi';
 tiptrails = true;
 frmrt = 40; % Framerate right here
 
-% Instantiate a kvlink
+% In the future you will be able to build a tether from links and nodes.
+% For now the links and nodes get built for you. Instantiate a kvlink
 % lj = kvlink(1000,25,2,0.1,0.025);
 
 % Make a tether with some kv links
-length = 10.0;
-mass = 0.1;
-radius = 1;
-springk = 150;
-dampFac = 1.5;
-relativeDensity = 2.0;
-numNodes = 20;
-thr = tether(length,mass,radius,springk,dampFac,relativeDensity,numNodes);
+thr = tether(tether.length,tether.mass,tether.radius,tether.springk,tether.dampFac,tether.relativeDensity,tether.numNodes);
 
 % Alter node position prior to state vector initialization
 theta1 = -90;
