@@ -4,15 +4,15 @@
 % This simulation... todo make a description
 
 % Simulation Variables
-sim.totaltime=5;
-sim.timestep=0.001;
-sim.steptype='variable';
+simP.totaltime=6.5;
+simP.timestep=0.001;
+simP.steptype='variable';
 
 % Tether Variables
-tether.length=10.0;
-tether.mass=0.1;
-tether.radius=1;
-tether.springk=150;
-tether.dampFac=1.5;
-tether.relativeDensity=2.0;
-tether.numNodes=20;
+tetherP.length=10.0;
+tetherP.mass=0.1;
+tetherP.radius=1;
+tetherP.springk=150;
+tetherP.dampFac=1.5;
+tetherP.relativeDensity=2.0;
+tetherP.numNodes=7;
