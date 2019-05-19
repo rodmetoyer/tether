@@ -1,4 +1,4 @@
-![tether](docs/images/tether.png =189x102)  
+<img src="docs/images/tether.png" height="189" width="102">  
 
 Software for doing tether simulations.
 This code is currently under construction. It currently can simulation a basic free-end tether in a static fluid environment.
