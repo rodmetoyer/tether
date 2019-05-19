@@ -9,6 +9,7 @@
 %		totaltime		[s] simulation time
 %		timestep		[s] simulation time step
 %		steptype 		denotes variable or fixed time step 
+%		solver 			denotes what solver to use
 % 	tetherP
 %		length			[m] tether total length
 %		mass			[kg] tether total mass
@@ -22,6 +23,7 @@
 simP.totaltime=6.5;
 simP.timestep=0.001;
 simP.steptype='variable';
+simP.solver='ode45';
 
 % Tether Variables
 tetherP.length=10.0;

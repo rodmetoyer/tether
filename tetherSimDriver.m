@@ -16,6 +16,7 @@ addpath('src');
 runFromScript = false; % Make true to skip GUI choices - todo make funcitonal
 simP.totaltime = 5;
 simP.timestep = 0.001;
+simP.solver='ode45';    
 tetherP.length = 10.0;
 tetherP.mass = 0.1;
 tetherP.radius = 1;
@@ -138,13 +139,38 @@ for i=1:1:tetherP.numNodes
     x0(3*tetherP.numNodes+3*i-1) = 0;
     x0(3*tetherP.numNodes+3*i) = 0;
 end
+
 disp('Starting simulation...');
+
 tic
 opts = odeset('RelTol',1e-5,'AbsTol',1e-7,'Stats','on');%,'OutputFcn',@odeplot);
-[time,svec] = ode45(@(t, x)kvstate(t, x, thr),simTimes,x0,opts);
-
-
+switch simP.solver
+    case 'ode1'
+        svec = ode1(@(t, x)kvstate(t, x, thr),simTimes,x0);
+        time = simTimes;
+    case 'ode2'
+        svec = ode2(@(t, x)kvstate(t, x, thr),simTimes,x0);
+        time = simTimes;
+    case 'ode3'
+        svec = ode3(@(t, x)kvstate(t, x, thr),simTimes,x0);
+        time = simTimes;
+    case 'ode4'
+        svec = ode4(@(t, x)kvstate(t, x, thr),simTimes,x0);
+        time = simTimes;
+    case 'ode5'
+        svec = ode5(@(t, x)kvstate(t, x, thr),simTimes,x0);
+        time = simTimes;
+    case 'ode45'
+        [time,svec] = ode45(@(t, x)kvstate(t, x, thr),simTimes,x0,opts);
+    case 'ode23'
+        [time,svec] = ode23(@(t, x)kvstate(t, x, thr),simTimes,x0,opts);
+    case 'ode113'
+        [time,svec] = ode113(@(t, x)kvstate(t, x, thr),simTimes,x0,opts);
+    otherwise
+        error('simP.solver not recognized.');
+end
 toc
+
 for i=1:1:tetherP.numNodes
     x(:,i) = svec(:,3*i-2);
     y(:,i) = svec(:,3*i-1);
@@ -185,9 +211,6 @@ for i=1:1:frmrt*simP.totaltime+1
     M(i) = getframe(hfig);
 end
 % todo do we want to add a dlg to choose a folder to save to?
-if ~exist('images','dir')
-    mkdir('images');
-end
 moviefile = ['images\' moviefile];
 writerObj = VideoWriter(moviefile);
 writerObj.FrameRate = frmrt; writerObj.Quality = 100; % optional

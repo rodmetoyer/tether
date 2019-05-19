@@ -12,9 +12,9 @@ if nargin < 4
     fterm = [-a*sin(b*t);-2*a*sin(2*b*t);0.0];
 end
 
-numnodes = numel(thr.nodes);
-xdot = NaN(6*numnodes,1);
-gravity = 9.81; % todo make this come from the enviroment object.
+numnodes = numel(thr.nodes);    % number of nodes
+xdot = NaN(6*numnodes,1);       % preallocate state derivative vector
+gravity = 9.81;                 % todo make this come from the enviroment object.
 
 % Update first 3*numnodes elements in xdot
 xdot(1:3*numnodes) = x(3*numnodes+1:end);
