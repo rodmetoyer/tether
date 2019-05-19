@@ -2,6 +2,21 @@
 % todo we need to come up with a naming convention for these input files
 % Description of simulation:
 % This simulation... todo make a description
+%
+% -----------------------------------
+% Descriptions
+% 	simP
+%		totaltime		[s] simulation time
+%		timestep		[s] simulation time step
+%		steptype 		denotes variable or fixed time step 
+% 	tetherP
+%		length			[m] tether total length
+%		mass			[kg] tether total mass
+%		radius			[??] tether diameter
+%		springk			[N/m] tether stiffness (EA/l stiffness?)
+%		dampFac			[??] tether damping factor
+%		relativeDensity	[??] ??
+%		numNodes		number of tether nodes in the bead model
 
 % Simulation Variables
 simP.totaltime=6.5;
