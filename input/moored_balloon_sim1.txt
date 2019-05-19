@@ -1,0 +1,35 @@
+% First simulation input file
+% todo we need to come up with a naming convention for these input files
+% Description of simulation:
+% This simulation... todo make a description
+%
+% -----------------------------------
+% Descriptions
+% 	simP
+%		totaltime		[s] simulation time
+%		timestep		[s] simulation time step
+%		steptype 		denotes variable or fixed time step 
+%		solver 			denotes what solver to use
+% 	tetherP
+%		length			[m] tether total length
+%		mass			[kg] tether total mass
+%		radius			[??] tether diameter
+%		springk			[N/m] tether stiffness (EA/l stiffness?)
+%		dampFac			[??] tether damping factor
+%		relativeDensity	[??] tether mass density relative to water
+%		numNodes		number of tether nodes in the bead model
+
+% Simulation Variables
+simP.totaltime=6.5;
+simP.timestep=0.01;
+simP.steptype='fixed';
+simP.solver='ode5';
+
+% Tether Variables
+tetherP.length=10.0;
+tetherP.mass=0.1;
+tetherP.radius=1;
+tetherP.springk=150;
+tetherP.dampFac=1.5;
+tetherP.relativeDensity=2.0;
+tetherP.numNodes=11;
