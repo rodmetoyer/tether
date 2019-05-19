@@ -117,6 +117,8 @@ frmrt = 40; % Framerate right here
 % lj = kvlink(1000,25,2,0.1,0.025);
 
 % Make a tether with some kv links
+% The plan is to operate on the tether object directly and move all
+% execution into the if blocks above.
 thr = tether(tetherP.length,tetherP.mass,tetherP.radius,tetherP.springk,tetherP.dampFac,tetherP.relativeDensity,tetherP.numNodes);
 
 % Alter node position prior to state vector initialization
