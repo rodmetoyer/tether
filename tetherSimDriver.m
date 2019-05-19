@@ -132,7 +132,7 @@ thr.nodes(tetherP.numNodes).setNodeMass(0.2);
 % In the current implementation the state vector and the tether node states
 % are coupled only through the parameters (node states are not ODE states);
 for i=1:1:tetherP.numNodes
-    x0(3*i-2) = thr.nodes(i).x;
+    x0(3*i-2) = thr.nodes(i).x;         % x0 = [x1, y1, z1, x2, ... zn, u1, v1, w1, u2, ..., wn]
     x0(3*i-1) = thr.nodes(i).y;
     x0(3*i) = thr.nodes(i).z;
     x0(3*tetherP.numNodes+3*i-2) = 0;

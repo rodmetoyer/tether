@@ -18,6 +18,21 @@
 %		dampFac			[??] tether damping factor
 %		relativeDensity	[??] tether mass density relative to water
 %		numNodes		number of tether nodes in the bead model
+%	fluidP
+%		density			[kg/m3] density of fluid
+%		depth			[m] depth of fluid point of interest
+%		dynVisc 		[Pa-s] 
+%		flowtype		0 = still, 1 = uniform, 2 = linear in z
+%		meanvelocity 	[m/s] 3x1 vector
+%		pointvelocity 	[m/s] 3x1 vector
+%		pressure 		[Pa] barometric pressure
+%		temp			[C] temp
+%		
+% -----------------------------------
+% Problem setup
+% Inertial frame
+%	iO-jO plane horizontal
+%	kO up
 
 % Simulation Variables
 simP.totaltime=6.5;
@@ -32,4 +47,15 @@ tetherP.radius=1;
 tetherP.springk=150;
 tetherP.dampFac=1.5;
 tetherP.relativeDensity=2.0;
-tetherP.numNodes=11;
+tetherP.numNodes=3;
+tetherP.CD=0.5;
+
+% Fluid Variables
+fluidP.density=1.225;
+fluidP.depth=0;
+fluidP.dynVisc=0.000018765;
+fluidP.flowtype=1;
+fluidP.meanvelocity=[0.3;4;0];
+fluidP.pointvelocity=[0.3;4;0];
+fluidP.pressure=101325;
+fluidP.temp=23;
