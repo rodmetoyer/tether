@@ -2,7 +2,7 @@ classdef tether < handle
     % The tether class represents a one-dimensional object comprised of
     % links and nodes.
     
-    % Generally-constant roperties of a tether
+    % Generally-constant properties of a tether
     properties (SetAccess = protected)
         nodes   % array of node objects
         links   % array of link objects
