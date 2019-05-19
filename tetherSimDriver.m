@@ -13,7 +13,9 @@ addpath('src');
 
 % Setup default simulation parameters.
 % We'll also use these for running directly from the script
-runFromScript = false; % Make true to skip GUI choices - todo make funcitonal
+runFromScript = false; % Make true to skip GUI choices - todo(rodney) make this functional
+% todo(rodney) need a simulation class
+% todo(rodney) get rid of the tetherP struct and operate on the object
 simP.totaltime = 5;
 simP.timestep = 0.001;
 simP.solver='ode45';    
@@ -102,6 +104,7 @@ end
     % Make plots and movies
 
 % Setup simulation
+% todo(rodney) all this shit should be part of the simulation class
 simTimes = 0:simP.timestep:simP.totaltime;
 numSteps = numel(simTimes);
 makemovie = true;
@@ -211,7 +214,13 @@ for i=1:1:frmrt*simP.totaltime+1
     M(i) = getframe(hfig);
 end
 % todo do we want to add a dlg to choose a folder to save to?
-moviefile = ['images\' moviefile];
+if ~exist([pwd '\products'],'dir')
+    mkdir('products');
+end
+if ~exist([pwd '\products\videos'],'dir')
+    mkdir('products\videos');
+end
+moviefile = ['products\videos\' moviefile];
 writerObj = VideoWriter(moviefile);
 writerObj.FrameRate = frmrt; writerObj.Quality = 100; % optional
 open(writerObj); writeVideo(writerObj,M); close(writerObj);
