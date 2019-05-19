@@ -22,7 +22,7 @@ tetherP.radius = 1;
 tetherP.springk = 150;
 tetherP.dampFac = 1.5;
 tetherP.relativeDensity = 2.0;
-tetherP.numNodes = 20;
+tetherP.numNodes = 10;
 
 % Choice of one or more input files or manual simulation set-up
 opts.Interpreter = 'tex'; opts.Default = 'Input File(s)'; opts.Resize='on';
@@ -33,6 +33,10 @@ if strcmp(answer,'Manual')
         'Simulation Parameters',[1 50;1 50],{num2str(simP.totaltime),num2str(simP.timestep)},opts);
     simP.totaltime = str2double(answer(1));
     simP.timestep = str2double(answer(2));
+    % todo(rodney) need to handle goofy time step. round, floor, ceil, whatever gets it done.
+    if simP.timestep > 0.001
+        uiwait(msgbox('If simulation is unstable try reducing timestep'));
+    end
     answer = inputdlg({'\fontsize{10}Enter tether length', '\fontsize{10}Enter tether mass',...
         '\fontsize{10}Enter tether radius','\fontsize{10}Enter tether spring constant','\fontsize{10}Enter tether damping factor',...
         '\fontsize{10}Enter tether relative density','\fontsize{10}Enter number of nodes'},'Tether Parameters',[1 50;1 50;1 50;1 50;1 50;1 50;1 50],...
@@ -179,6 +183,10 @@ for i=1:1:frmrt*simP.totaltime+1
     title(['Time: ' num2str(time(n),'%4.2f')]);
     hold off
     M(i) = getframe(hfig);
+end
+% todo do we want to add a dlg to choose a folder to save to?
+if ~exist('images','dir')
+    mkdir('images');
 end
 moviefile = ['images\' moviefile];
 writerObj = VideoWriter(moviefile);
