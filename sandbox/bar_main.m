@@ -5,7 +5,7 @@ clearvars; close all; clc;
 % Build a thr struct to use in place of the class for now
 % For the class I'll make two constructors: one build up from links and one
 % build down from tether. todo(rodney)
-thr.numlinks = 10;
+thr.numlinks = 5;
 thr.length = 12; % m
 thr.meanDiameter = 0.1; % m
 thr.mass = 3; % kg
@@ -43,3 +43,35 @@ xdot = bar_state(t,x0,thr);
 simtime = 0:0.001:30;
 opts = odeset('RelTol',1e-5,'Stats','on','OutputFcn',@odeplot);
 [time,y] = ode45(@(t,x) bar_state(t,x,thr),simtime,x0,opts);
+
+%% Post process
+% set-up
+N = thr.numlinks;
+for j=1:1:length(y)
+    for i = 1:1:N
+        qj = [y(j,3*N+4*i-3);y(j,3*N+4*i-2);y(j,3*N+4*i-1);y(j,3*N+4*i)];
+        j_C_O = [qj(1)^2+qj(2)^2-qj(3)^2-qj(4)^2, 2*(qj(2)*qj(3) + qj(1)*qj(4)),   2*(qj(2)*qj(4) - qj(1)*qj(3));...
+                 2*(qj(2)*qj(3) - qj(1)*qj(4)),   qj(1)^2-qj(2)^2+qj(3)^2-qj(4)^2, 2*(qj(3)*qj(4) + qj(1)*qj(2));...
+                 2*(qj(2)*qj(4) + qj(1)*qj(3)),   2*(qj(3)*qj(4) - qj(1)*qj(2)),   qj(1)^2-qj(2)^2-qj(3)^2+qj(4)^2];
+        O_C_j = transpose(j_C_O);    
+        if i==1
+            r_co_O(3*i-2:3*i,j) = O_C_j*[thr.link(i).length;0;0];            
+        else
+            r_co_O(3*i-2:3*i,j) = O_C_j*[thr.link(i).length;0;0] + r_co_O(3*(i-1)-2:3*(i-1),j);
+        end
+        link(i).position(:,j) = r_co_O(3*i-2:3*i,j);
+        linkx(i,j) = r_co_O(3*i-2,j);
+        linky(i,j) = r_co_O(3*i-1,j);
+        linkz(i,j) = r_co_O(3*i,j);
+    end % end post set-up loop
+end % end time loop
+
+% Start position
+figure
+plot3(link
+
+% End position
+
+
+% Movie
+
