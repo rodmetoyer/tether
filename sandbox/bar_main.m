@@ -3,12 +3,23 @@
 clearvars; close all; clc;
 
 % Build a thr struct to use in place of the class for now
-thr.numlinks = 10;
+% For the class I'll make two constructors: one build up from links and one
+% build down from tether. todo(rodney)
+thr.numlinks = 3;
+thr.length = 12; % m
+thr.meanDiameter = 0.1; % m
+thr.mass = 3; % kg
+thr.density = 1000;
+env.gravity = 9.8;
+env.fluid.density = 1000;
 for i=1:1:thr.numlinks
-    thr.link(i).length = 0.2; % m
-    thr.link(i).mass = 0.3;   % kg
-    temp = thr.link(i).mass*thr.link(i).length*thr.link(i).length/12;
-    thr.link(i).inertia = [0 0 0; 0 temp 0; 0 0 temp];
+    thr.link(i).length = thr.length/thr.numlinks; % m
+    thr.link(i).diameter = thr.meanDiameter; 
+    thr.link(i).mass = thr.mass/thr.numlinks;   % kg
+    thr.link(i).reldens = thr.density/env.fluid.density;
+    thr.link(i).weight = pi/4*thr.link(i).diameter^2*thr.link(i).length*env.gravity*(thr.link(i).reldens-1);
+    temp = thr.link(i).mass*(thr.link(i).length^2 + 3/4*thr.link(i).diameter^2)/12;
+    thr.link(i).inertia = [1/8*thr.link(i).mass*thr.link(i).diameter^2 0 0; 0 temp 0; 0 0 temp];
     clear temp
     thr.link(i).x = 0.1;
     thr.link(i).c = thr.link(i).length - thr.link(i).x;
