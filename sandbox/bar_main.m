@@ -4,21 +4,21 @@ clearvars; close all; clc;
 
 % sim setup
 sim.Duration = 60;
-sim.TimeStep = 0.01;
+sim.TimeStep = 0.005;
 
 % Results visualization setup
-makemovie = true; moviefile = 'FiveLinks_noDrag.avi'; frmrt = 10;
+makemovie = true; moviefile = 'SevenLinks100m_noDrag.avi'; frmrt = 10;
 
 % Build a thr struct to use in place of the class for now
 % For the class I'll make two constructors: one build up from links and one
 % build down from tether. todo(rodney)
-thr.numlinks = 5;
-thr.length = 12; % m
-thr.meanDiameter = 0.1; % m
-thr.mass = 3; % kg
-thr.density = 900;
+thr.numlinks = 7;
+thr.length = 100; % m
+thr.meanDiameter = 0.024; % m
+thr.density = 769.25; % kg/m^3 based on 24mm Spectra 12 braid
+thr.mass = pi/4*thr.meanDiameter^2*thr.length*thr.density; % kg
 env.gravity = 9.8;
-env.fluid.density = 1000;
+env.fluid.density = 1.225; % air 1.225, water 997
 for i=1:1:thr.numlinks
     thr.link(i).length = thr.length/thr.numlinks; % m
     thr.link(i).diameter = thr.meanDiameter; 

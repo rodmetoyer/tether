@@ -59,7 +59,7 @@ for i=1:1:N
                                       omegaj(2) -omegaj(3) 0 omegaj(1);...
                                       omegaj(3) omegaj(2) -omegaj(1) 0];
     % Build last of the matrices. The ones that only have stuff at the end
-    SF(3*i-2:3*i,3*i-2:3*i) = zeros;
+    SF(3*i-2:3*i,3*i-2:3*i) = zeros(3);
     FL(3*i-2:3*i,1) = [0;0;0];
     L(3*i+1:3*i+3,1) = thr.link(i).moment;
     Somega(3*i-2:3*i,1) = omegajX*(thr.link(i).inertia*omegaj);
