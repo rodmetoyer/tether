@@ -3,12 +3,13 @@
 clearvars; close all; clc;
 
 % sim setup
-sim.Duration = 60;
-sim.TimeStep = 0.001;
+sim.Duration = 30;
+sim.TimeStep = 0.0001;
 
 % Results visualization setup
-makemovie = true; moviefile = 'test_noDrag.avi'; frmrt = 20;
-saveplots = true;
+makemovie = true; moviefile = 'test_noDrag.avi'; frmrt = 5;
+makeplots = false;
+saveplots = false;
 
 % Build a thr struct to use in place of the class for now
 % For the class I'll make two constructors: one build up from links and one
@@ -19,7 +20,7 @@ thr.meanDiameter = 0.024; % m
 thr.density = 769.25; % kg/m^3 based on 24mm Spectra 12 braid
 thr.mass = pi/4*thr.meanDiameter^2*thr.length*thr.density; % kg
 env.gravity = 9.8;
-env.fluid.density = 400; % air 1.225, water 997
+env.fluid.density = 50; % air 1.225, water 997
 for i=1:1:thr.numlinks
     thr.link(i).length = thr.length/thr.numlinks; % m
     thr.link(i).diameter = thr.meanDiameter; 
@@ -33,7 +34,9 @@ for i=1:1:thr.numlinks
     thr.link(i).c = thr.link(i).length - thr.link(i).x;
     thr.link(i).moment = [0;0;0];
     % Initial states
-    qj = [1;0;0;0];
+    rotAng = 80;
+    rotAxis = [0;1;0];
+    qj = [cosd(rotAng/2);rotAxis(1)*sind(rotAng/2);rotAxis(2)*sind(rotAng/2);rotAxis(3)*sind(rotAng/2)];
     qj = qj/norm(qj);
     x0(3*i-2,1) = 0;
     x0(3*i-1,1) = 0;
@@ -82,36 +85,40 @@ linkz = [zeros(1,length(linkz));linkz];
 cmap = jet(N);
 % Look at the evolution of the states
 if saveplots; color = 'none'; else; color = 'w'; end
-for i=1:1:N
-    figure('Position',[100 100 800 600],'color',color);
-    plot(time,y(:,3*i-2),'Marker','+','Color','r');%cmap(i,:));
-    hold on
-    plot(time,y(:,3*i-1),'Marker','o','Color','b');%cmap(i,:));
-    plot(time,y(:,3*i),'Marker','*','Color','g');%cmap(i,:));
-    hold off
-    title(['Angular Rates | Link ' num2str(i)]);
-    xlabel('time (s)'); ylabel('angular rate (rad/s)');
-    if saveplots
-        set(gca,'color','none');
-        export_fig(['products\rates_Link' num2str(i)], '-png', '-transparent');
-        close gcf
+if makeplots
+    for i=1:1:N
+        figure('Position',[100 100 800 600],'color',color);
+        plot(time,y(:,3*i-2),'Marker','+','Color','r');%cmap(i,:));
+        hold on
+        plot(time,y(:,3*i-1),'Marker','o','Color','b');%cmap(i,:));
+        plot(time,y(:,3*i),'Marker','*','Color','g');%cmap(i,:));
+        hold off
+        title(['Angular Rates | Link ' num2str(i)]);
+        xlabel('time (s)'); ylabel('angular rate (rad/s)');
+        if saveplots
+            set(gca,'color','none');
+            export_fig(['products\rates_Link' num2str(i)], '-png', '-transparent');
+            close gcf
+        end
     end
 end
 
-for i=1:1:N
-    figure('Position',[600 400 800 600],'color',color);
-    plot(time,y(:,3*N+4*i-3),'Marker','+','Color','r');%cmap(i,:));
-    hold on
-    plot(time,y(:,3*N+4*i-2),'Marker','o','Color','b');%cmap(i,:));
-    plot(time,y(:,3*N+4*i-1),'Marker','*','Color','g');%cmap(i,:));
-    plot(time,y(:,3*N+4*i),'Marker','^','Color','k');%cmap(i,:));
-    hold off
-    title(['Euler Parameters | Link ' num2str(i)]);
-    xlabel('time (s)'); ylabel('Euler Parameter');
-    if saveplots
-        set(gca,'color','none');
-        export_fig(['products\EulerParams_Link' num2str(i)], '-png', '-transparent');
-        close gcf
+if makeplots
+    for i=1:1:N
+        figure('Position',[600 400 800 600],'color',color);
+        plot(time,y(:,3*N+4*i-3),'Marker','+','Color','r');%cmap(i,:));
+        hold on
+        plot(time,y(:,3*N+4*i-2),'Marker','o','Color','b');%cmap(i,:));
+        plot(time,y(:,3*N+4*i-1),'Marker','*','Color','g');%cmap(i,:));
+        plot(time,y(:,3*N+4*i),'Marker','^','Color','k');%cmap(i,:));
+        hold off
+        title(['Euler Parameters | Link ' num2str(i)]);
+        xlabel('time (s)'); ylabel('Euler Parameter');
+        if saveplots
+            set(gca,'color','none');
+            export_fig(['products\EulerParams_Link' num2str(i)], '-png', '-transparent');
+            close gcf
+        end
     end
 end
 
