@@ -25,7 +25,7 @@ for i=1:1:numel(inputfiles)
     
 end
 
-frame = 6501;
+frame = 1;
 [~,n] = size(states); nn = n/6;
 cmap = jet(nn);
 figure
@@ -41,11 +41,11 @@ function [x,y,z,u,v,w] = breakoutStates(states)
     [~,n] = size(states);
     nn = n/6;
     for i=1:1:nn
-        x(:,i) = states(:,6*i-5);
-        y(:,i) = states(:,6*i-4);
-        z(:,i) = states(:,6*i-3);
-        u(:,i) = states(:,6*i-2);
-        v(:,i) = states(:,6*i-1);
-        w(:,i) = states(:,6*i);
+        x(:,i) = states(:,3*i-2);
+        y(:,i) = states(:,3*i-1);
+        z(:,i) = states(:,3*i);
+        u(:,i) = states(:,3*nn+3*i-2);
+        v(:,i) = states(:,3*nn+3*i-1);
+        w(:,i) = states(:,3*nn+3*i);
     end
 end

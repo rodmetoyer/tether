@@ -47,13 +47,14 @@ classdef simulation < handle
                 opts = odeset('RelTol',1e-5,'AbsTol',1e-7,'Stats','on');
             end
             simTimes = 0:hobj.timestep:hobj.duration;
-            for i=1:1:length(hobj.tether.nodes)
-                x0(6*i-5) = hobj.tether.nodes(i).x;
-                x0(6*i-4) = hobj.tether.nodes(i).y;
-                x0(6*i-3) = hobj.tether.nodes(i).z;
-                x0(6*i-2) = hobj.tether.nodes(i).u;
-                x0(6*i-1) = hobj.tether.nodes(i).v;
-                x0(6*i) = hobj.tether.nodes(i).w;
+            nn = length(hobj.tether.nodes);
+            for i=1:1:nn
+                x0(3*i-2) = hobj.tether.nodes(i).x;
+                x0(3*i-1) = hobj.tether.nodes(i).y;
+                x0(3*i) = hobj.tether.nodes(i).z;
+                x0(3*nn+3*i-2) = hobj.tether.nodes(i).u;
+                x0(3*nn+3*i-1) = hobj.tether.nodes(i).v;
+                x0(3*nn+3*i) = hobj.tether.nodes(i).w;
             end
             x0 = x0.';
             switch hobj.solver
