@@ -20,6 +20,9 @@ classdef node < handle
             n.x = x;
             n.y = y;
             n.z = z;
+            n.u = 0;
+            n.v = 0;
+            n.w = 0;
         end
         
         % Other class methods

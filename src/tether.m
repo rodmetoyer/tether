@@ -15,11 +15,13 @@ classdef tether < handle
     end
     % Variable properties of the tether
     properties
-        time    % Current tether time (not necessarily global time)
+        time     % Current tether time (not necessarily global time)
+        endforce % 3x1 force at the end of the tether (todo FRAME?)
     end
     
     methods
         function hobj = tether(length,mass,radius,spring,damp,reldens,n)
+            % tether constructor
             % todo(rodney) implement heterogeneous discretization. Also,
             % add a model type arg (KV,STD, and bar to start) and make a
             % tether props class for the properties maybe.
@@ -75,7 +77,77 @@ classdef tether < handle
             end                
         end
         
-        
+        function xdot = derivative(hobj,t,x,env)
+            % returns the derivative of the tether state vector
+            numnodes = numel(hobj.nodes);    % number of nodes
+            xdot = NaN(6*numnodes,1);       % preallocate state derivative vector
+            gravity = 9.81;                 % todo make this come from the enviroment object.
+
+            % Update first 3*numnodes elements in xdot
+            xdot(1:3*numnodes) = x(3*numnodes+1:end);
+
+            % First node
+            % The first node is geometrically constrained
+            r = [x(4);x(5);x(6)]-[x(1);x(2);x(3)];
+            lr = norm(r);
+            unitr = r/lr;
+            stretch = lr-hobj.links(1).baselength;
+            flink = [0;0;0];
+            v = [x(3*numnodes+4);x(3*numnodes+5);x(3*numnodes+6)] - [x(3*numnodes+1);x(3*numnodes+2);x(3*numnodes+3)];
+            stretchd = (r(1)*v(1)+r(2)*v(2)+r(3)*v(3))/lr;
+            if stretch > 0
+                flink = (stretch*hobj.links(1).stiffness + stretchd*hobj.links(1).damping)*unitr;
+            end
+            % Add buoyancy
+            % ftot = flink + [0;0;hobj.nodes(1).buoyancy];
+
+            % Add drag - none needed for the current implementation, but in general the
+            % first node may not be constrained. Need to fgure out if I am going to
+            % make that a law or not once I get the implementation ironed out.
+
+            % Update acceleration (remember gravity) - first node constrained
+            xdot(3*numnodes+1) = 0; % ftot(1)/hobj.nodes(1).mass;
+            xdot(3*numnodes+2) = 0; % ftot(2)/hobj.nodes(1).mass;
+            xdot(3*numnodes+3) = 0; % ftot(3)/hobj.nodes(1).mass-gravity;
+
+            % Internal nodes
+            fprevlink = flink; % force on the previous node
+            for i=2:1:numnodes-1
+                r = [x(3*i+1);x(3*i+2);x(3*i+3)]-[x(3*i-2);x(3*i-1);x(3*i)];
+                lr = norm(r);
+                unitr = r/lr;
+                stretch = lr-hobj.links(i).baselength;
+                flink = [0;0;0];
+                v = [x(3*numnodes+3*i+1);x(3*numnodes+3*i+2);x(3*numnodes+3*i+3)] - [x(3*numnodes+3*i-2);x(3*numnodes+3*i-1);x(3*numnodes+3*i)];
+                stretchd = (r(1)*v(1)+r(2)*v(2)+r(3)*v(3))/lr;
+                if stretch > 0
+                    flink = (stretch*hobj.links(i).stiffness + stretchd*hobj.links(i).damping)*unitr;
+                end
+
+                % Add buoyancy and previous link
+                ftot = flink + [0;0;hobj.nodes(i).buoyancy] - fprevlink;
+
+                % Add drag
+
+                % Update acceleration (remember gravity) - first node constrained
+                xdot(3*numnodes+3*i-2) = ftot(1)/hobj.nodes(i).mass;
+                xdot(3*numnodes+3*i-1) = ftot(2)/hobj.nodes(i).mass;
+                xdot(3*numnodes+3*i) = ftot(3)/hobj.nodes(i).mass-gravity;
+                fprevlink = flink; % update force on the node from the previous line
+            end
+
+            % Add buoyancy, previous link, end force for End node
+            hobj.endforce = [0;0;0]; % todo where does the end force come from? Passed in?
+            ftot = [0;0;hobj.nodes(numnodes).buoyancy] - fprevlink + hobj.endforce;
+
+            % Add drag end node
+
+            % Update acceleration (remember gravity) - first node constrained
+            xdot(3*numnodes+3*numnodes-2) = ftot(1)/hobj.nodes(numnodes).mass;
+            xdot(3*numnodes+3*numnodes-1) = ftot(2)/hobj.nodes(numnodes).mass;
+            xdot(3*numnodes+3*numnodes) = ftot(3)/hobj.nodes(numnodes).mass-gravity;
+
+        end % end derivative
         
         % Adds links and nodes
         function addLink(hobj,node1,node2)

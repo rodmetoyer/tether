@@ -1,0 +1,42 @@
+% Simulation file
+% todo we need to come up with a naming convention for these input files
+% Description of simulation:
+% This simulation... todo make a description
+%
+% -----------------------------------
+% Descriptions
+%   Objects
+%       sim      a simulation
+%       thr      a tether
+%       env      the operational environment
+
+%%% Make a simulation object %%%
+% The simulation object is instantiated with name-value pair arguments.
+% Missing name-value pair will result in default values for the property.
+% sim = simulation('duration',1,'timestep',1.0e-4,'solver','ode45');
+% You can set the solver options here as well like this:
+% opts = odeset('RelTol',1e-5,'AbsTol',1e-7,'Stats','on');
+
+%%% Make a tether object and add it to the simulation %%%
+% The way we make a tether is changing, but I'll support this method for a while.
+% Pass arguments to the tether constructor in this order:
+%   thr = tether(length,mass,radius,springConstant,dampingFactor,relativeDensity,numberOfNodes)
+% Units are assumed to be compatible
+thr = tether(10,0.1,0.001,1000,1,1,5);
+
+% When you make a tether the initial node positions are arbitrarily set evenly
+% spaced along the x-axis. You change the initial positions and speeds using 
+% the setNodeStates method. The first argument is a 3xn position vector and
+% the second is a 3xn speed vector       
+thr.setNodeStates([0 0 0 0 0; 0 0 0 0 0; 0 -2.5 -5 -7.5 -10],[0 0 0 0 0; 0 0 0 0 0; 0 0 0 0 0]);
+
+% You can adjust individual node properties.
+% For example, make the last node heavier
+thr.nodes(end).setNodeMass(0.2);
+
+% Finally, lets connect everything
+hobj.tether = thr;
+
+% Now the environment
+env = environment;
+hobj.environment = env;

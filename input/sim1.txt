@@ -8,7 +8,6 @@
 % 	simP
 %		totaltime		[s] simulation time
 %		timestep		[s] simulation time step
-%		steptype 		denotes variable or fixed time step 
 %		solver 			denotes what solver to use
 % 	tetherP
 %		length			[m] tether total length
@@ -22,7 +21,6 @@
 % Simulation Variables
 simP.totaltime=6.5;
 simP.timestep=0.001;
-simP.steptype='variable';
 simP.solver='ode45';
 
 % Tether Variables
@@ -33,3 +31,7 @@ tetherP.springk=150;
 tetherP.dampFac=1.5;
 tetherP.relativeDensity=2.0;
 tetherP.numNodes=7;
+
+% Environment Variables
+envP.fluid = 'water';
+envP.gravity = 9.81;
